@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1700.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "event_guru_api", "event_guru_api\event_guru_api.csproj", "{42E3967E-3FD0-4198-8C15-60847ECFCB1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42E3967E-3FD0-4198-8C15-60847ECFCB1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42E3967E-3FD0-4198-8C15-60847ECFCB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42E3967E-3FD0-4198-8C15-60847ECFCB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42E3967E-3FD0-4198-8C15-60847ECFCB1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD665D52-4BA0-4981-A866-4FE0118E8438}
+	EndGlobalSection
+EndGlobal
