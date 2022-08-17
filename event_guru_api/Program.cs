@@ -23,6 +23,7 @@ builder.Services
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen(c => c.UseDateOnlyTimeOnlyStringConverters());
 
 //1. Add the database context to the application
@@ -67,7 +68,11 @@ builder.Services.AddAuthentication(options =>
          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
      };
  });
+
 builder.Services.AddScoped<IEventBudgetService, EventBudgetService>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<ISMSSenderService, SMSSenderService>();
+
 
 var app = builder.Build();
 

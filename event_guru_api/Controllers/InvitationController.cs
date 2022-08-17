@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using event_guru_api.models;
+using event_guru_api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,17 @@ namespace event_guru_api.Controllers
         private readonly ApplicationContext _db;
         private readonly ILogger _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISMSSenderService _smsSender;
         public InvitationController(
             ApplicationContext db,
             ILogger<InvitationController> logger,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ISMSSenderService smsSender)
         {
             _db = db;
             _logger = logger;
             _userManager = userManager;
+            _smsSender = smsSender;
         }
 
         [HttpPost]
@@ -37,7 +41,22 @@ namespace event_guru_api.Controllers
                     return ValidationProblem();
                 }
                 var theEvent = await _db.Events.Where(e => e.ID == model.EventID).FirstOrDefaultAsync();
-                var theAttendee =
+                var theAttendee = await _userManager.FindByIdAsync(model.AttendeeID);
+                var smsModel = new SMSModel()
+                {
+                    from = theEvent!.Contact,
+                    to = theAttendee!.UserName,
+                    text = "Welcome to the event we have created",
+                };
+                var result = await _smsSender.SendSMS(smsModel);
+                if (result)
+                {
+                    return Ok("The message was sent successfully");
+                }
+                else
+                {
+                    return Problem("The message sending failed");
+                }
             }
             catch (Exception e)
             {
