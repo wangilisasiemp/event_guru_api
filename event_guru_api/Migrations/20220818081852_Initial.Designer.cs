@@ -11,8 +11,8 @@ using event_guru_api.models;
 namespace event_guru_api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220818080418_Migrations-Initial")]
-    partial class MigrationsInitial
+    [Migration("20220818081852_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

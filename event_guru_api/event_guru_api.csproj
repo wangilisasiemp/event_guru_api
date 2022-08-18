@@ -47,12 +47,14 @@
     <None Remove="DateOnlyTimeOnly.AspNet" />
     <None Remove="DateOnlyTimeOnly.AspNet.Swashbuckle" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />
     <Folder Include="auth\" />
     <Folder Include="Utils\" />
     <Folder Include="Services\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
   <Target Name="PrePublishTarget" AfterTargets="Publish">
     <Exec Command="echo  &quot;Migrating Database ...&quot;" />
