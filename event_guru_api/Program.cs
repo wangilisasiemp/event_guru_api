@@ -29,8 +29,28 @@ builder.Services.AddSwaggerGen(c => c.UseDateOnlyTimeOnlyStringConverters());
 //1. Add the database context to the application
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+    string connStr;
+    if (env == "Development")
+    {
+        connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    }
+    else
+    {
+        //Use connection string provided by runtime by heroku
+        //the connection-
+        var connUrl = Environment.GetEnvironmentVariable("CLEARDB_DATABASE_URL");
+        connUrl = connUrl.Replace("mysql://", String.Empty);
+        var userPassSide = connUrl.Split("@")[0];
+        var hostSide = connUrl.Split("@")[1];
+
+        var connUser = userPassSide.Split(":")[0];
+        var connPass = userPassSide.Split(":")[1];
+        var connHost = hostSide.Split("/")[0];
+        var connDb = hostSide.Split("/")[1].Split("?")[0];
+        connStr = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb}";
+    }
+    options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
 });
 //2.Adding the identity by dependency injection
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
