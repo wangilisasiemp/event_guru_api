@@ -22,7 +22,7 @@ namespace event_guru_api.models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+
             //modelling many to many relationship for Budget and vendor
             modelBuilder.Entity<BudgetVendor>()
                 .HasKey(bt => new { bt.BudgetID, bt.VendorID });
@@ -63,6 +63,7 @@ namespace event_guru_api.models
                 .HasForeignKey(e => e.OrganizerID);
 
             //modelling the event & user contribution relationships
+
             modelBuilder.Entity<Contribution>()
                 .HasOne(c => c.Event)
                 .WithMany(e => e.Contributions)
@@ -115,6 +116,7 @@ namespace event_guru_api.models
                 entity.Property(m => m.Name).HasMaxLength(127);
 
             });
+            base.OnModelCreating(modelBuilder);
         }
 
         public override int SaveChanges()
