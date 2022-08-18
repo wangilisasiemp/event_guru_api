@@ -42,29 +42,48 @@ namespace event_guru_api.Controllers
                 }
                 var theEvent = await _db.Events.Where(e => e.ID == model.EventID).FirstOrDefaultAsync();
                 var theAttendee = await _userManager.FindByIdAsync(model.AttendeeID);
-                var smsModel = new SMSModel()
+                if (theAttendee is null)
                 {
-                    from = theEvent!.Contact,
-                    to = theAttendee!.UserName,
-                    text = "Welcome to the event we have created",
-                };
-                var result = await _smsSender.SendSMS(smsModel);
-                if (result)
-                {
-                    return Ok("The message was sent successfully");
+                    //send sms with a link
+                    var smsModel = new SMSModel()
+                    {
+                        from = theEvent!.Contact,
+                        to = theAttendee!.UserName,
+                        text = "You are invited to the event : {theEvent!.Title}," +
+                        "To attend the event, please download the app through this link : " +
+                        "https://play.google.com/eventguru",
+                    };
+                    var result = await _smsSender.SendSMS(smsModel);
+                    if (result)
+                    {
+                        return Ok("The message was sent successfully");
+                    }
+                    else
+                    {
+                        return Problem("The message sending failed");
+                    }
                 }
                 else
                 {
-                    return Problem("The message sending failed");
+                    var newInvitation = new Invitation()
+                    {
+                        EventID = model.EventID,
+                        AttendeeID = model.AttendeeID,
+                        CardText = $"You are invited to the event : {theEvent!.Title},you can view the event through the link ",
+                        EventLink = $"https://eventguru/events/{theEvent.ID}",
+                    };
+                    await _db.Invitations.AddAsync(newInvitation);
+                    var result = await _db.SaveChangesAsync();
+                    return Ok("The invitation was sent successfully");
                 }
+
+
+
             }
             catch (Exception e)
             {
-                return Problem(e.ToString());
+                return Problem(e.Message);
             }
-
-
-
         }
 
         [HttpPost]

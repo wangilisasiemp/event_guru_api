@@ -7,7 +7,7 @@ namespace event_guru_api.models
         public string? CardText { get; set; }
         public string? EventLink { get; set; }
 
-        public int EventID { get; set; }
+        public int? EventID { get; set; }
         public Event? Event { get; set; }
 
         public string? AttendeeID { get; set; }
