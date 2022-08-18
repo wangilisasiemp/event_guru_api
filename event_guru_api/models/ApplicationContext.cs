@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,7 @@ namespace event_guru_api.models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             //modelling many to many relationship for Budget and vendor
             modelBuilder.Entity<BudgetVendor>()
                 .HasKey(bt => new { bt.BudgetID, bt.VendorID });
@@ -81,7 +83,38 @@ namespace event_guru_api.models
                 .HasOne(c => c.Attendee)
                 .WithMany(a => a.Invitations)
                 .HasForeignKey(c => c.AttendeeID);
-            base.OnModelCreating(modelBuilder);
+
+            //fixing the length of the identity databases
+            // Shorten key length for Identity 
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(m => m.Email).HasMaxLength(127);
+                entity.Property(m => m.NormalizedEmail).HasMaxLength(127);
+                entity.Property(m => m.NormalizedUserName).HasMaxLength(127);
+                entity.Property(m => m.UserName).HasMaxLength(127);
+            });
+            modelBuilder.Entity<IdentityRole>(entity =>
+            {
+                entity.Property(m => m.Name).HasMaxLength(127);
+                entity.Property(m => m.NormalizedName).HasMaxLength(127);
+            });
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                entity.Property(m => m.LoginProvider).HasMaxLength(127);
+                entity.Property(m => m.ProviderKey).HasMaxLength(127);
+            });
+            modelBuilder.Entity<IdentityUserRole<string>>(entity =>
+            {
+                entity.Property(m => m.UserId).HasMaxLength(127);
+                entity.Property(m => m.RoleId).HasMaxLength(127);
+            });
+            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
+            {
+                entity.Property(m => m.UserId).HasMaxLength(127);
+                entity.Property(m => m.LoginProvider).HasMaxLength(127);
+                entity.Property(m => m.Name).HasMaxLength(127);
+
+            });
         }
 
         public override int SaveChanges()
