@@ -48,7 +48,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
         var connPass = userPassSide.Split(":")[1];
         var connHost = hostSide.Split("/")[0];
         var connDb = hostSide.Split("/")[1].Split("?")[0];
-        connStr = $"Server={connHost};Database={connDb};Uid={connUser};Pwd={connPass};";
+        connStr = $"Server={connHost};Database={connDb};Uid={connUser};Pwd={connPass};SSL Mode=None";
     }
 
     options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
