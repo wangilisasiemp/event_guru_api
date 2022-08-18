@@ -22,7 +22,12 @@ namespace event_guru_api.models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
 
+            base.OnModelCreating(modelBuilder);
             //modelling many to many relationship for Budget and vendor
             modelBuilder.Entity<BudgetVendor>()
                 .HasKey(bt => new { bt.BudgetID, bt.VendorID });
@@ -116,7 +121,7 @@ namespace event_guru_api.models
                 entity.Property(m => m.Name).HasMaxLength(127);
 
             });
-            base.OnModelCreating(modelBuilder);
+
         }
 
         public override int SaveChanges()
