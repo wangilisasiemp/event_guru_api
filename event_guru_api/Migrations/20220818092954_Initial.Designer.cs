@@ -11,7 +11,7 @@ using event_guru_api.models;
 namespace event_guru_api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220818085444_Initial")]
+    [Migration("20220818092954_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,8 @@ namespace event_guru_api.Migrations
             modelBuilder.Entity("event_guru_api.models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -37,8 +38,8 @@ namespace event_guru_api.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
@@ -59,12 +60,12 @@ namespace event_guru_api.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
@@ -82,8 +83,8 @@ namespace event_guru_api.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
@@ -150,7 +151,7 @@ namespace event_guru_api.Migrations
                         .HasColumnType("double");
 
                     b.Property<string>("AttendeeID")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(85)");
 
                     b.Property<bool?>("Completed")
                         .HasColumnType("tinyint(1)");
@@ -234,7 +235,7 @@ namespace event_guru_api.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("OrganizerID")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(85)");
 
                     b.Property<bool>("RoyalTransport")
                         .HasColumnType("tinyint(1)");
@@ -267,7 +268,7 @@ namespace event_guru_api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AttendeeID")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(85)");
 
                     b.Property<bool>("Alcoholic")
                         .HasColumnType("tinyint(1)");
@@ -304,7 +305,7 @@ namespace event_guru_api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AttendeeID")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("CardText")
                         .HasColumnType("longtext");
@@ -380,19 +381,20 @@ namespace event_guru_api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.HasKey("Id");
 
@@ -407,6 +409,7 @@ namespace event_guru_api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(85)
                         .HasColumnType("int");
 
                     b.Property<string>("ClaimType")
@@ -417,7 +420,8 @@ namespace event_guru_api.Migrations
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.HasKey("Id");
 
@@ -430,6 +434,7 @@ namespace event_guru_api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(85)
                         .HasColumnType("int");
 
                     b.Property<string>("ClaimType")
@@ -440,7 +445,8 @@ namespace event_guru_api.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.HasKey("Id");
 
@@ -452,19 +458,20 @@ namespace event_guru_api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -476,12 +483,12 @@ namespace event_guru_api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("RoleId")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -493,16 +500,16 @@ namespace event_guru_api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(127)
-                        .HasColumnType("varchar(127)");
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");

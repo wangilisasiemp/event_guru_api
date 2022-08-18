@@ -17,11 +17,11 @@ namespace event_guru_api.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Id = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedName = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    NormalizedName = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -36,7 +36,7 @@ namespace event_guru_api.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Id = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FirstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -46,13 +46,13 @@ namespace event_guru_api.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Address = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserName = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedUserName = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    NormalizedUserName = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedEmail = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: true)
+                    NormalizedEmail = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: true)
@@ -112,9 +112,9 @@ namespace event_guru_api.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", maxLength: 85, nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    RoleId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimType = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -137,9 +137,9 @@ namespace event_guru_api.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", maxLength: 85, nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimType = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -162,13 +162,13 @@ namespace event_guru_api.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    LoginProvider = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderKey = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    ProviderKey = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -187,9 +187,9 @@ namespace event_guru_api.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    UserId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleId = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    RoleId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -214,11 +214,11 @@ namespace event_guru_api.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    UserId = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LoginProvider = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    LoginProvider = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(127)", maxLength: 127, nullable: false)
+                    Name = table.Column<string>(type: "varchar(85)", maxLength: 85, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Value = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -269,7 +269,7 @@ namespace event_guru_api.Migrations
                     FinalizationDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     EventStartTime = table.Column<TimeOnly>(type: "time(6)", nullable: true),
                     EventEndTime = table.Column<TimeOnly>(type: "time(6)", nullable: true),
-                    OrganizerID = table.Column<string>(type: "varchar(255)", nullable: true)
+                    OrganizerID = table.Column<string>(type: "varchar(85)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
@@ -317,7 +317,7 @@ namespace event_guru_api.Migrations
                     Amount = table.Column<double>(type: "double", nullable: true),
                     Completed = table.Column<bool>(type: "tinyint(1)", nullable: true),
                     EventID = table.Column<int>(type: "int", nullable: true),
-                    AttendeeID = table.Column<string>(type: "varchar(255)", nullable: true)
+                    AttendeeID = table.Column<string>(type: "varchar(85)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
@@ -342,7 +342,7 @@ namespace event_guru_api.Migrations
                 name: "EventAttendances",
                 columns: table => new
                 {
-                    AttendeeID = table.Column<string>(type: "varchar(255)", nullable: false)
+                    AttendeeID = table.Column<string>(type: "varchar(85)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EventID = table.Column<int>(type: "int", nullable: false),
                     Confirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -382,7 +382,7 @@ namespace event_guru_api.Migrations
                     EventLink = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EventID = table.Column<int>(type: "int", nullable: true),
-                    AttendeeID = table.Column<string>(type: "varchar(255)", nullable: true)
+                    AttendeeID = table.Column<string>(type: "varchar(85)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)

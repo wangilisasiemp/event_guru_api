@@ -92,35 +92,23 @@ namespace event_guru_api.models
 
             //fixing the length of the identity databases
             // Shorten key length for Identity 
-            modelBuilder.Entity<ApplicationUser>(entity =>
-            {
-                entity.Property(m => m.Email).HasMaxLength(127);
-                entity.Property(m => m.NormalizedEmail).HasMaxLength(127);
-                entity.Property(m => m.NormalizedUserName).HasMaxLength(127);
-                entity.Property(m => m.UserName).HasMaxLength(127);
-            });
-            modelBuilder.Entity<IdentityRole>(entity =>
-            {
-                entity.Property(m => m.Name).HasMaxLength(127);
-                entity.Property(m => m.NormalizedName).HasMaxLength(127);
-            });
-            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
-            {
-                entity.Property(m => m.LoginProvider).HasMaxLength(127);
-                entity.Property(m => m.ProviderKey).HasMaxLength(127);
-            });
-            modelBuilder.Entity<IdentityUserRole<string>>(entity =>
-            {
-                entity.Property(m => m.UserId).HasMaxLength(127);
-                entity.Property(m => m.RoleId).HasMaxLength(127);
-            });
-            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
-            {
-                entity.Property(m => m.UserId).HasMaxLength(127);
-                entity.Property(m => m.LoginProvider).HasMaxLength(127);
-                entity.Property(m => m.Name).HasMaxLength(127);
-
-            });
+            modelBuilder.Entity<ApplicationUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            modelBuilder.Entity<ApplicationUser>(entity => entity.Property(m => m.NormalizedEmail).HasMaxLength(85));
+            modelBuilder.Entity<ApplicationUser>(entity => entity.Property(m => m.NormalizedUserName).HasMaxLength(85));
+            modelBuilder.Entity<IdentityRole>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            modelBuilder.Entity<IdentityRole>(entity => entity.Property(m => m.NormalizedName).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity => entity.Property(m => m.LoginProvider).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity => entity.Property(m => m.ProviderKey).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserRole<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserRole<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserToken<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserToken<string>>(entity => entity.Property(m => m.LoginProvider).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserToken<string>>(entity => entity.Property(m => m.Name).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            modelBuilder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
+            modelBuilder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            modelBuilder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
 
         }
 
