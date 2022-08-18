@@ -84,7 +84,7 @@ namespace event_guru_api.models
                 .HasOne(c => c.Attendee)
                 .WithMany(a => a.Invitations)
                 .HasForeignKey(c => c.AttendeeID);
-            base.OnModelCreating(modelBuilder);
+
             //fixing the length of the identity databases
             // Shorten key length for Identity 
             modelBuilder.Entity<ApplicationUser>(entity =>
@@ -116,7 +116,7 @@ namespace event_guru_api.models
                 entity.Property(m => m.Name).HasMaxLength(127);
 
             });
-
+            base.OnModelCreating(modelBuilder);
         }
 
         public override int SaveChanges()
