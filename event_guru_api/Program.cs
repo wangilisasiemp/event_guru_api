@@ -50,6 +50,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
         var connDb = hostSide.Split("/")[1].Split("?")[0];
         connStr = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb}";
     }
+
     options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
 });
 //2.Adding the identity by dependency injection
