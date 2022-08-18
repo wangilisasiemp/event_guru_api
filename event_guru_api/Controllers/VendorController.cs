@@ -58,6 +58,7 @@ namespace event_guru_api.Controllers
                 Phone = model.Phone,
                 Email = model.Email,
                 Description = model.Description,
+                Unit = model.Unit,
                 Type = model.Type,
                 Price = model.Price,
                 Negotiable = model.Negotiable
@@ -86,6 +87,7 @@ namespace event_guru_api.Controllers
             vendor.Description = model.Description;
             vendor.Email = model.Email;
             vendor.Price = model.Price;
+            vendor.Unit = model.Unit;
             vendor.Phone = model.Phone;
             vendor.Negotiable = model.Negotiable;
             vendor.Photo = model.Photo;
