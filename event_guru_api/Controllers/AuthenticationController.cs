@@ -37,7 +37,7 @@ namespace event_guru_api.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromForm] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
@@ -80,7 +80,7 @@ namespace event_guru_api.Controllers
         /***/
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             //check if the form is dully filled
             if (!ModelState.IsValid)
@@ -137,7 +137,7 @@ namespace event_guru_api.Controllers
 
         [HttpPost]
         [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromForm] RegisterModel model)
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
             //check if the form is dully filled
             if (!ModelState.IsValid)
@@ -194,7 +194,7 @@ namespace event_guru_api.Controllers
 
         [HttpPost]
         [Route("register-organizer")]
-        public async Task<IActionResult> RegisterOrganizer([FromForm] RegisterModel model)
+        public async Task<IActionResult> RegisterOrganizer([FromBody] RegisterModel model)
         {
             //check if the form is dully filled
             if (!ModelState.IsValid)

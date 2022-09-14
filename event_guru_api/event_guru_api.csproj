@@ -48,6 +48,8 @@
     <None Remove="DateOnlyTimeOnly.AspNet.Swashbuckle" />
     <None Remove="Newtonsoft.Json" />
     <None Remove="Migrations\" />
+    <None Remove="PortalSDK" />
+    <None Remove="BouncyCastle.Crypto" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />
@@ -55,6 +57,17 @@
     <Folder Include="Utils\" />
     <Folder Include="Services\" />
     <Folder Include="Migrations\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PortalSDK">
+      <HintPath>..\PortalSDK.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="PrePublishTarget" AfterTargets="Publish">
     <Exec Command="echo  &quot;Migrating Database ...&quot;" />

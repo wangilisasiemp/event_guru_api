@@ -32,7 +32,7 @@ namespace event_guru_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> InviteUserToEvent([FromForm] InvitationModel model)
+        public async Task<IActionResult> InviteUserToEvent([FromBody] InvitationModel model)
         {
             try
             {

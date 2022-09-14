@@ -65,7 +65,7 @@ namespace event_guru_api.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromForm] EventModel model)
+        public async Task<IActionResult> Add([FromBody] EventModel model)
         {
             //check if the model has all necessary data
             if (!ModelState.IsValid)
@@ -117,7 +117,7 @@ namespace event_guru_api.Controllers
 
         [HttpPut]
         [Route("{EventID:int}")]
-        public async Task<IActionResult> Edit(int EventID, [FromForm] EventModel model)
+        public async Task<IActionResult> Edit(int EventID, [FromBody] EventModel model)
         {
             //check if the model has all necessary data
             if (!ModelState.IsValid)

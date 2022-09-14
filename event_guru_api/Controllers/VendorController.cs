@@ -38,7 +38,7 @@ namespace event_guru_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromForm] VendorModel model)
+        public async Task<IActionResult> Add([FromBody] VendorModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace event_guru_api.Controllers
 
         [HttpPut]
         [Route("{ID:int}")]
-        public async Task<IActionResult> Edit(int ID, [FromForm] VendorModel model)
+        public async Task<IActionResult> Edit(int ID, [FromBody] VendorModel model)
         {
             if (!ModelState.IsValid)
             {

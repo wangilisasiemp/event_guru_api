@@ -52,7 +52,7 @@ namespace event_guru_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromForm] ContributionModel model)
+        public async Task<IActionResult> Add([FromBody] ContributionModel model)
         {
             if (!ModelState.IsValid)
             {
