@@ -47,11 +47,12 @@ namespace event_guru_api.Controllers
                     var userRoles = await _userManager.GetRolesAsync(user);
                     var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name,user.UserName),
-                    new Claim(ClaimTypes.NameIdentifier,user.Id),
-                    new Claim(ClaimTypes.HomePhone,user.PhoneNumber),
-                    new Claim(ClaimTypes.GivenName,user.FirstName),
-                    new Claim(ClaimTypes.Surname,user.LastName),
+
+                    new Claim("username",user.UserName),
+                    new Claim("userid",user.Id),
+                    new Claim("phone",user.PhoneNumber),
+                    new Claim("firstname",user.FirstName),
+                    new Claim("lastname",user.LastName),
                     new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                 };
 
