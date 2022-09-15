@@ -48,6 +48,10 @@ namespace event_guru_api.Controllers
                     var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name,user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier,user.UserName),
+                    new Claim(ClaimTypes.HomePhone,user.PhoneNumber),
+                    new Claim(ClaimTypes.GivenName,user.FirstName),
+                    new Claim(ClaimTypes.Surname,user.LastName),
                     new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                 };
 
@@ -59,7 +63,7 @@ namespace event_guru_api.Controllers
                     var token = GetToken(authClaims);
                     return Ok(new
                     {
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        token = $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}",
                         expiration = token.ValidTo
                     });
                 }
