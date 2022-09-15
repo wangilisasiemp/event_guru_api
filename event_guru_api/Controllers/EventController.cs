@@ -43,7 +43,7 @@ namespace event_guru_api.Controllers
             }
         }
 
-        [HttpGet("/byOrganizer/{OrganizerID}")]
+        [HttpGet("Organizer/{OrganizerID}")]
         public async Task<ActionResult<IEnumerable<Event>>> GetEventByUser(string OrganizerID)
         {
             try
@@ -57,7 +57,7 @@ namespace event_guru_api.Controllers
 
         }
 
-        [HttpGet("/byAttendee/{AttendeeID}")]
+        [HttpGet("Attendee/{AttendeeID}")]
         public async Task<ActionResult<IEnumerable<EventAttendance>>> GetEventByAttendee(string AttendeeID)
         {
             try
