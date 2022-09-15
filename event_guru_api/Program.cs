@@ -54,7 +54,15 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseMySql(connStr, ServerVersion.AutoDetect(connStr));
 });
 //2.Adding the identity by dependency injection
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+{
+    config.Password.RequireDigit = true;
+    config.Password.RequiredLength = 6;
+    config.Password.RequiredUniqueChars = 0;
+    config.Password.RequireLowercase = true;
+    config.Password.RequireNonAlphanumeric = true;
+    config.Password.RequireUppercase = true;
+})
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddCors(options =>

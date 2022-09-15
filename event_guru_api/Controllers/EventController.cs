@@ -33,21 +33,44 @@ namespace event_guru_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetAll()
         {
-            return await _db.Events.ToListAsync<Event>();
+            try
+            {
+                return await _db.Events.ToListAsync<Event>();
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
         }
 
         [HttpGet("/byOrganizer/{OrganizerID}")]
         public async Task<ActionResult<IEnumerable<Event>>> GetEventByUser(string OrganizerID)
         {
-            return await _db.Events.Where(e => e.OrganizerID == OrganizerID).ToListAsync<Event>();
+            try
+            {
+                return await _db.Events.Where(e => e.OrganizerID == OrganizerID).ToListAsync<Event>();
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
+
         }
 
         [HttpGet("/byAttendee/{AttendeeID}")]
         public async Task<ActionResult<IEnumerable<EventAttendance>>> GetEventByAttendee(string AttendeeID)
         {
-            return await _db.EventAttendances.Where(ea => ea.AttendeeID == AttendeeID)
+            try
+            {
+                return await _db.EventAttendances.Where(ea => ea.AttendeeID == AttendeeID)
                 .Include(ea => ea.Event)
                 .ToListAsync();
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
+
         }
 
 
@@ -55,62 +78,78 @@ namespace event_guru_api.Controllers
         [Route("{ID:int}")]
         public async Task<ActionResult<Event>> Get(int ID)
         {
-            Event? ev = await _db.Events.Where(e => e.ID == ID).FirstOrDefaultAsync();
-            if (ev is null)
+            try
             {
-                return Problem(title: "EventNotFound", statusCode: 404, detail: "The Event you are searching was not found");
+                Event? ev = await _db.Events.Where(e => e.ID == ID).FirstOrDefaultAsync();
+                if (ev is null)
+                {
+                    return Problem(title: "EventNotFound", statusCode: 404, detail: "The Event you are searching was not found");
+                }
+                return ev;
             }
-            return ev;
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
+
         }
 
 
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] EventModel model)
         {
-            //check if the model has all necessary data
-            if (!ModelState.IsValid)
+            try
             {
-                return ValidationProblem();
+                //check if the model has all necessary data
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem();
+                }
+
+                //check to see if the organizaer is available
+                var orgExists = await _userManager.FindByIdAsync(model.OrganizerID);
+                if (orgExists is null)
+                {
+                    ModelState.AddModelError("OrganizerNotFound", "The organizer is not found");
+                    return ValidationProblem(ModelState);
+                }
+
+                var newEvent = new Event()
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    Location = model.Location,
+                    Contact = model.Contact,
+                    Type = model.Type,
+                    NoOfAttendees = model.NoOfAttendees,
+                    FinalizationDate = model.FinalizationDate ?? model.EventDate!.AddDays(-2),
+                    MinContribution = model.MinContribution,
+                    EventDate = model.EventDate,
+                    EventStartTime = model.EventStartTime,
+                    EventEndTime = model.EventEndTime,
+                    OrganizerID = model.OrganizerID,
+                    SecretCode = Guid.NewGuid().ToString(),
+
+                    //services from vendors
+                    Caterer = model.Caterer ?? false,
+                    Drinks = model.Drinks ?? true,
+                    MC = model.MC ?? false,
+                    ConferenceHall = model.ConferenceHall ?? true,
+                    RoyalTransport = model.RoyalTransport ?? false,
+                    Decoration = model.Decoration ?? true,
+                    OrdinaryTransport = model.OrdinaryTransport ?? false,
+                    Security = model.Security ?? false,
+                    Entertainment = model.Entertainment ?? false
+                };
+                await _db.Events.AddAsync(newEvent);
+                await _db.SaveChangesAsync();
+                return Ok(new Response { Status = "Success", Message = "The event was added successfully" });
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
             }
 
-            //check to see if the organizaer is available
-            var orgExists = await _userManager.FindByIdAsync(model.OrganizerID);
-            if (orgExists is null)
-            {
-                ModelState.AddModelError("OrganizerNotFound", "The organizer is not found");
-                return ValidationProblem(ModelState);
-            }
-
-            var newEvent = new Event()
-            {
-                Title = model.Title,
-                Description = model.Description,
-                Location = model.Location,
-                Contact = model.Contact,
-                Type = model.Type,
-                NoOfAttendees = model.NoOfAttendees,
-                FinalizationDate = model.FinalizationDate ?? model.EventDate!.AddDays(-2),
-                MinContribution = model.MinContribution,
-                EventDate = model.EventDate,
-                EventStartTime = model.EventStartTime,
-                EventEndTime = model.EventEndTime,
-                OrganizerID = model.OrganizerID,
-                SecretCode = Guid.NewGuid().ToString(),
-
-                //services from vendors
-                Caterer = model.Caterer ?? false,
-                Drinks = model.Drinks ?? true,
-                MC = model.MC ?? false,
-                ConferenceHall = model.ConferenceHall ?? true,
-                RoyalTransport = model.RoyalTransport ?? false,
-                Decoration = model.Decoration ?? true,
-                OrdinaryTransport = model.OrdinaryTransport ?? false,
-                Security = model.Security ?? false,
-                Entertainment = model.Entertainment ?? false
-            };
-            await _db.Events.AddAsync(newEvent);
-            await _db.SaveChangesAsync();
-            return Ok(new Response { Status = "Success", Message = "The event was added successfully" });
 
         }
 
@@ -119,56 +158,64 @@ namespace event_guru_api.Controllers
         [Route("{EventID:int}")]
         public async Task<IActionResult> Edit(int EventID, [FromBody] EventModel model)
         {
-            //check if the model has all necessary data
-            if (!ModelState.IsValid)
+            try
             {
-                return ValidationProblem();
+                //check if the model has all necessary data
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem();
+                }
+
+                //check to see if the event exists
+                var ExistingEvent = await _db.Events.Where(ev => ev.ID == EventID).FirstOrDefaultAsync();
+                if (ExistingEvent is null)
+                {
+                    return Problem(
+                        title: "EventNotFound",
+                        detail: "The event you are trying to edit is not available",
+                        statusCode: 404);
+                }
+                //check to see if the organizaer is available
+                var orgExists = await _userManager.FindByIdAsync(model.OrganizerID);
+                if (orgExists is null)
+                {
+                    ModelState.AddModelError("OrganizerNotFound", "The organizer is not found");
+                    return ValidationProblem(ModelState);
+                }
+
+                ExistingEvent.Title = model.Title ?? ExistingEvent.Title;
+                ExistingEvent.Description = model.Description ?? ExistingEvent.Description;
+                ExistingEvent.Location = model.Location ?? ExistingEvent.Location;
+                ExistingEvent.Contact = model.Contact ?? ExistingEvent.Contact;
+                ExistingEvent.Type = model.Type ?? ExistingEvent.Type;
+                ExistingEvent.NoOfAttendees = model.NoOfAttendees ?? ExistingEvent.NoOfAttendees;
+                ExistingEvent.FinalizationDate = model.FinalizationDate ?? ExistingEvent.FinalizationDate;
+                ExistingEvent.MinContribution = model.MinContribution ?? ExistingEvent.MinContribution;
+                ExistingEvent.EventDate = model.EventDate;
+                ExistingEvent.EventStartTime = model.EventStartTime ?? ExistingEvent.EventStartTime;
+                ExistingEvent.EventEndTime = model.EventEndTime ?? ExistingEvent.EventEndTime;
+                ExistingEvent.OrganizerID = model.OrganizerID ?? ExistingEvent.OrganizerID;
+
+                //services from vendors
+                ExistingEvent.Caterer = model.Caterer ?? ExistingEvent.Caterer;
+                ExistingEvent.Drinks = model.Drinks ?? ExistingEvent.Drinks;
+                ExistingEvent.MC = model.MC ?? ExistingEvent.MC;
+                ExistingEvent.ConferenceHall = model.ConferenceHall ?? ExistingEvent.ConferenceHall;
+                ExistingEvent.RoyalTransport = model.RoyalTransport ?? ExistingEvent.RoyalTransport;
+                ExistingEvent.Decoration = model.Decoration ?? ExistingEvent.Decoration;
+                ExistingEvent.OrdinaryTransport = model.OrdinaryTransport ?? ExistingEvent.OrdinaryTransport;
+                ExistingEvent.Security = model.Security ?? ExistingEvent.Security;
+                ExistingEvent.Entertainment = model.Entertainment ?? ExistingEvent.Entertainment;
+
+
+                await _db.SaveChangesAsync();
+                return Ok(new Response { Status = "Success", Message = "The event was updated successfully" });
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
             }
 
-            //check to see if the event exists
-            var ExistingEvent = await _db.Events.Where(ev => ev.ID == EventID).FirstOrDefaultAsync();
-            if (ExistingEvent is null)
-            {
-                return Problem(
-                    title: "EventNotFound",
-                    detail: "The event you are trying to edit is not available",
-                    statusCode: 404);
-            }
-            //check to see if the organizaer is available
-            var orgExists = await _userManager.FindByIdAsync(model.OrganizerID);
-            if (orgExists is null)
-            {
-                ModelState.AddModelError("OrganizerNotFound", "The organizer is not found");
-                return ValidationProblem(ModelState);
-            }
-
-            ExistingEvent.Title = model.Title ?? ExistingEvent.Title;
-            ExistingEvent.Description = model.Description ?? ExistingEvent.Description;
-            ExistingEvent.Location = model.Location ?? ExistingEvent.Location;
-            ExistingEvent.Contact = model.Contact ?? ExistingEvent.Contact;
-            ExistingEvent.Type = model.Type ?? ExistingEvent.Type;
-            ExistingEvent.NoOfAttendees = model.NoOfAttendees ?? ExistingEvent.NoOfAttendees;
-            ExistingEvent.FinalizationDate = model.FinalizationDate ?? ExistingEvent.FinalizationDate;
-            ExistingEvent.MinContribution = model.MinContribution ?? ExistingEvent.MinContribution;
-            ExistingEvent.EventDate = model.EventDate;
-            ExistingEvent.EventStartTime = model.EventStartTime ?? ExistingEvent.EventStartTime;
-            ExistingEvent.EventEndTime = model.EventEndTime ?? ExistingEvent.EventEndTime;
-            ExistingEvent.OrganizerID = model.OrganizerID ?? ExistingEvent.OrganizerID;
-
-            //services from vendors
-            ExistingEvent.Caterer = model.Caterer ?? ExistingEvent.Caterer;
-            ExistingEvent.Drinks = model.Drinks ?? ExistingEvent.Drinks;
-            ExistingEvent.MC = model.MC ?? ExistingEvent.MC;
-            ExistingEvent.ConferenceHall = model.ConferenceHall ?? ExistingEvent.ConferenceHall;
-            ExistingEvent.RoyalTransport = model.RoyalTransport ?? ExistingEvent.RoyalTransport;
-            ExistingEvent.Decoration = model.Decoration ?? ExistingEvent.Decoration;
-            ExistingEvent.OrdinaryTransport = model.OrdinaryTransport ?? ExistingEvent.OrdinaryTransport;
-            ExistingEvent.Security = model.Security ?? ExistingEvent.Security;
-            ExistingEvent.Entertainment = model.Entertainment ?? ExistingEvent.Entertainment;
-
-
-            await _db.SaveChangesAsync();
-            return Ok(new Response { Status = "Success", Message = "The event was updated successfully" });
 
         }
 

@@ -90,7 +90,15 @@ namespace event_guru_api.Controllers
         [Route("{eventID}")]
         public async Task<IActionResult> InviteMultipleUsersToEvent(int EventID)
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
+
         }
     }
 }

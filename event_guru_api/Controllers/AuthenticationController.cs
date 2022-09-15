@@ -39,29 +39,37 @@ namespace event_guru_api.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            try
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var authClaims = new List<Claim>
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name,user.UserName),
                     new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                 };
 
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
 
-                var token = GetToken(authClaims);
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
-                });
+                    var token = GetToken(authClaims);
+                    return Ok(new
+                    {
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo
+                    });
+                }
+                return Unauthorized();
             }
-            return Unauthorized();
+            catch (Exception err)
+            {
+                return Problem(err.Message);
+            }
+
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)
@@ -82,56 +90,64 @@ namespace event_guru_api.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            //check if the form is dully filled
-            if (!ModelState.IsValid)
+            try
             {
-                return ValidationProblem();
+                //check if the form is dully filled
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem();
+                }
+
+                //check if the passwords entered actually match
+                if (!model.Password!.Equals(model.ConfirmPassword))
+                {
+                    ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
+                    return ValidationProblem(ModelState);
+                }
+
+                //check to see if the user exists
+                var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
+                if (userExists is not null)
+                {
+                    ModelState.AddModelError("UserExists", "The user with those details already exists");
+                    return ValidationProblem(ModelState);
+                }
+
+                var newUser = new ApplicationUser()
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    UserName = model.PhoneNumber,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                };
+
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (!result.Succeeded)
+                {
+
+                    return Problem($" Something went wrong {result.Errors.ToString()}");
+                }
+
+                //Add roles to the user using role manager
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Attendee))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Attendee));
+                }
+
+                if (await _roleManager.RoleExistsAsync(UserRoles.Attendee))
+                {
+                    await _userManager.AddToRoleAsync(newUser, UserRoles.Attendee);
+                }
+                return Ok(new Response { Status = "Success", Message = "User added successfully!" });
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
             }
 
-            //check if the passwords entered actually match
-            if (!model.Password!.Equals(model.ConfirmPassword))
-            {
-                ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
-                return ValidationProblem(ModelState);
-            }
-
-            //check to see if the user exists
-            var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
-            if (userExists is not null)
-            {
-                ModelState.AddModelError("UserExists", "The user with those details already exists");
-                return ValidationProblem(ModelState);
-            }
-
-            var newUser = new ApplicationUser()
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber,
-                Gender = model.Gender,
-                Address = model.Address,
-                UserName = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString(),
-            };
-
-            var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (!result.Succeeded)
-            {
-
-                return Problem($" Something went wrong {result.Errors.ToString()}");
-            }
-
-            //Add roles to the user using role manager
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Attendee))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Attendee));
-            }
-
-            if (await _roleManager.RoleExistsAsync(UserRoles.Attendee))
-            {
-                await _userManager.AddToRoleAsync(newUser, UserRoles.Attendee);
-            }
-            return Ok(new Response { Status = "Success", Message = "User added successfully!" });
 
         }
 
@@ -139,137 +155,161 @@ namespace event_guru_api.Controllers
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
-            //check if the form is dully filled
-            if (!ModelState.IsValid)
+            try
             {
-                return ValidationProblem();
+                //check if the form is dully filled
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem();
+                }
+
+                //check if the passwords entered actually match
+                if (!model.Password!.Equals(model.ConfirmPassword))
+                {
+                    ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
+                    return ValidationProblem(ModelState);
+                }
+
+                //check to see if the user exists
+                var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
+                if (userExists is not null)
+                {
+                    ModelState.AddModelError("UserExists", "The user with those details already exists");
+                    return ValidationProblem(ModelState);
+                }
+
+                var newUser = new ApplicationUser()
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    UserName = model.PhoneNumber,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                };
+
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (!result.Succeeded)
+                {
+
+                    return Problem($" Something went wrong {result.Errors.ToString()}");
+                }
+
+                //Add roles to the user using role manager
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                }
+
+                if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                {
+                    await _userManager.AddToRoleAsync(newUser, UserRoles.Admin);
+                }
+
+                return Ok(new Response { Status = "Success", Message = "User admin added successfully!" });
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
             }
 
-            //check if the passwords entered actually match
-            if (!model.Password!.Equals(model.ConfirmPassword))
-            {
-                ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
-                return ValidationProblem(ModelState);
-            }
-
-            //check to see if the user exists
-            var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
-            if (userExists is not null)
-            {
-                ModelState.AddModelError("UserExists", "The user with those details already exists");
-                return ValidationProblem(ModelState);
-            }
-
-            var newUser = new ApplicationUser()
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber,
-                Gender = model.Gender,
-                Address = model.Address,
-                UserName = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString(),
-            };
-
-            var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (!result.Succeeded)
-            {
-
-                return Problem($" Something went wrong {result.Errors.ToString()}");
-            }
-
-            //Add roles to the user using role manager
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            }
-
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            {
-                await _userManager.AddToRoleAsync(newUser, UserRoles.Admin);
-            }
-
-            return Ok(new Response { Status = "Success", Message = "User admin added successfully!" });
         }
 
         [HttpPost]
         [Route("register-organizer")]
         public async Task<IActionResult> RegisterOrganizer([FromBody] RegisterModel model)
         {
-            //check if the form is dully filled
-            if (!ModelState.IsValid)
+            try
             {
-                return ValidationProblem();
+                //check if the form is dully filled
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem();
+                }
+
+                //check if the passwords entered actually match
+                if (!model.Password!.Equals(model.ConfirmPassword))
+                {
+                    ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
+                    return ValidationProblem(ModelState);
+                }
+
+                //check to see if the user exists
+                var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
+                if (userExists is not null)
+                {
+                    ModelState.AddModelError("UserExists", "The user with those details already exists");
+                    return ValidationProblem(ModelState);
+                }
+
+                var newUser = new ApplicationUser()
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    UserName = model.PhoneNumber,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                };
+
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (!result.Succeeded)
+                {
+
+                    return Problem($" Something went wrong {result.Errors.ToString()}");
+                }
+
+                //Add roles to the user using role manager
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Organizer))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Organizer));
+                }
+
+                if (await _roleManager.RoleExistsAsync(UserRoles.Organizer))
+                {
+                    await _userManager.AddToRoleAsync(newUser, UserRoles.Organizer);
+                }
+
+                return Ok(new Response { Status = "Success", Message = "User added successfully!" });
+            }
+            catch (Exception err)
+            {
+                return Problem(err.Message);
             }
 
-            //check if the passwords entered actually match
-            if (!model.Password!.Equals(model.ConfirmPassword))
-            {
-                ModelState.AddModelError("PasswordsDontMatch", "Your passwords do not match");
-                return ValidationProblem(ModelState);
-            }
-
-            //check to see if the user exists
-            var userExists = await _userManager.FindByNameAsync(model.PhoneNumber);
-            if (userExists is not null)
-            {
-                ModelState.AddModelError("UserExists", "The user with those details already exists");
-                return ValidationProblem(ModelState);
-            }
-
-            var newUser = new ApplicationUser()
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber,
-                Gender = model.Gender,
-                Address = model.Address,
-                UserName = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString(),
-            };
-
-            var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (!result.Succeeded)
-            {
-
-                return Problem($" Something went wrong {result.Errors.ToString()}");
-            }
-
-            //Add roles to the user using role manager
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Organizer))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Organizer));
-            }
-
-            if (await _roleManager.RoleExistsAsync(UserRoles.Organizer))
-            {
-                await _userManager.AddToRoleAsync(newUser, UserRoles.Organizer);
-            }
-
-            return Ok(new Response { Status = "Success", Message = "User added successfully!" });
         }
 
         [HttpGet]
         [Route("/qrcode")]
         public async Task<IActionResult> GenerateQrCode(string email)
         {
-            var user = await _userManager.FindByNameAsync(email);
-            if (user is null)
+            try
             {
-                return Problem(title: "Something went wrong");
+                var user = await _userManager.FindByNameAsync(email);
+                if (user is null)
+                {
+                    return Problem(title: "Something went wrong");
+                }
+                GeneratedBarcode barcode = QRCodeWriter.CreateQrCode(user.Id, 300);
+                barcode.AddBarcodeValueTextBelowBarcode();
+                barcode.SetMargins(10);
+                barcode.ChangeBarCodeColor(Color.BlueViolet);
+                string folderPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Uploads"));
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                string filePath = Path.Combine(folderPath, "NewQrCode.png");
+                barcode.SaveAsPng(filePath);
+                return Ok();
             }
-            GeneratedBarcode barcode = QRCodeWriter.CreateQrCode(user.Id, 300);
-            barcode.AddBarcodeValueTextBelowBarcode();
-            barcode.SetMargins(10);
-            barcode.ChangeBarCodeColor(Color.BlueViolet);
-            string folderPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Uploads"));
-            if (!Directory.Exists(folderPath))
+            catch (Exception err)
             {
-                Directory.CreateDirectory(folderPath);
+                return Problem(err.Message);
             }
-            string filePath = Path.Combine(folderPath, "NewQrCode.png");
-            barcode.SaveAsPng(filePath);
-            return Ok();
+
         }
 
     }

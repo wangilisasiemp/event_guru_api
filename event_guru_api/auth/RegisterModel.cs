@@ -19,7 +19,10 @@ namespace event_guru_api.auth
 
         public string? Address { get; set; }
 
+
         [Required(ErrorMessage = "Password is required")]
+        //[RegularExpression(@"^(?=.*[a - z])(?=.*[A - Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$",
+        [RegularExpression(@"(?=.*?[A-Z])(?=(.*[a-z]))(?=(.*[\d]))(?=(.*[^a-zA-Z0-9])).{6,}$")]
         public string? Password { get; set; }
 
         [Required(ErrorMessage = "Confirm Password is required")]
