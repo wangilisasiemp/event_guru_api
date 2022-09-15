@@ -58,7 +58,7 @@ namespace event_guru_api.Controllers
 
                     foreach (var userRole in userRoles)
                     {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                        authClaims.Add(new Claim("role", userRole));
                     }
 
                     var token = GetToken(authClaims);
