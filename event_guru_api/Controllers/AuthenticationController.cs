@@ -48,7 +48,7 @@ namespace event_guru_api.Controllers
                     var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name,user.UserName),
-                    new Claim(ClaimTypes.NameIdentifier,user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier,user.Id),
                     new Claim(ClaimTypes.HomePhone,user.PhoneNumber),
                     new Claim(ClaimTypes.GivenName,user.FirstName),
                     new Claim(ClaimTypes.Surname,user.LastName),
