@@ -31,6 +31,20 @@ namespace event_guru_api.Controllers
             _smsSender = smsSender;
         }
 
+        [HttpGet("{AttendeeID}")]
+        public async Task<ActionResult<IEnumerable<Invitation>>> getAllInvitation(String AttendeeID)
+        {
+            try
+            {
+                return await _db.Invitations.Where(i => i.AttendeeID == AttendeeID).ToListAsync();
+
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> InviteUserToEvent([FromBody] InvitationModel model)
         {
@@ -76,9 +90,6 @@ namespace event_guru_api.Controllers
                     var result = await _db.SaveChangesAsync();
                     return Ok("The invitation was sent successfully");
                 }
-
-
-
             }
             catch (Exception e)
             {

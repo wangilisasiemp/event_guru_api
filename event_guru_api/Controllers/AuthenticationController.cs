@@ -64,7 +64,7 @@ namespace event_guru_api.Controllers
                     var token = GetToken(authClaims);
                     return Ok(new
                     {
-                        token = $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}",
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
                         expiration = token.ValidTo
                     });
                 }
