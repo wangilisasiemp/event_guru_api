@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using event_guru_api.models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities;
+using PortalSDK;
 
 namespace event_guru_api.Controllers
 {
@@ -16,10 +19,12 @@ namespace event_guru_api.Controllers
     {
         private readonly ApplicationContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        public ContributionController(ApplicationContext db, UserManager<ApplicationUser> userManager)
+        private readonly IConfiguration Config;
+        public ContributionController(ApplicationContext db, UserManager<ApplicationUser> userManager, IConfiguration config)
         {
             _db = db;
             _userManager = userManager;
+            Config = config;
         }
 
         [HttpGet]
@@ -73,6 +78,58 @@ namespace event_guru_api.Controllers
                 return Problem(err.Message);
             }
 
+        }
+        [HttpPost]
+        [Route("pay")]
+        public async Task<IActionResult> Pay([FromBody] String name)
+        {
+            try
+            {
+                //Api Key
+                var api_key = Config["MPESA_SANDBOX:API_KEY"];
+
+                //Public key on the API listener used to encrypt keys
+                var public_key = Config["MPESA_SANDBOX:PUBLIC_KEY"];
+                var address = Config["MPESA_SANDBOX:GET_SESSION_ADDRESS"];
+                var port = Config["MPESA_SANDBOX:GET_SESSION_PORT"];
+                var path = Config["MPESA_SANDBOX:GET_SESSION_PATH"];
+                APIContext context = new APIContext();
+                context.setPublicKey(public_key);
+                context.setApiKey(api_key);
+                context.setSsl(true);
+                context.setMethodType(APIMethodTypes.GET);
+                context.setAddress(address);
+                context.setPort(443);
+
+                context.setPath(path);
+
+                //context.addParameter("key", "value");
+                context.addHeader("Origin", "*");
+
+                APIRequest request = new APIRequest(context);
+                APIResponse response = null;
+                try
+                {
+                    response = request.excecute();
+                }
+                catch (Exception e)
+                {
+                    return Problem($"Call failed {0}", e.Message);
+                }
+
+                //Display results
+
+
+                //Generate BearerToken
+                //String token = request.createBearerToken();
+
+                return Ok(response.getBody());
+
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
 
         [HttpPost]
