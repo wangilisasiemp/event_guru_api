@@ -94,7 +94,7 @@ namespace event_guru_api.Services
             context.addHeader("Origin", "*");
 
             APIRequest request = new APIRequest(context);
-            Thread.Sleep(30 * 1000);
+            Thread.Sleep(10 * 1000);
             APIResponse response = null;
 
             response = request.excecute();
