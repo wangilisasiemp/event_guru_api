@@ -35,10 +35,26 @@ namespace event_guru_api.Controllers
         {
             try
             {
-                return await _db.Contributions
+                List<ContributionResultModel> contributions = new List<ContributionResultModel>();
+                List<Contribution> contrList = await _db.Contributions
                                .Include(ct => ct.Event)
                                .Include(ct => ct.Attendee)
                                .ToListAsync<Contribution>();
+                contrList.ForEach(con =>
+                {
+                    ContributionResultModel cont = new ContributionResultModel()
+                    {
+                        Completed = con.Completed,
+                        EventID = con.EventID,
+                        Amount = con.Amount,
+                        EventName = con.Event.Title,
+                        ID = con.ID,
+                        TransactionID = con.TransactionID
+
+                    };
+                    contributions.Add(cont);
+                });
+                return Ok(contributions);
             }
             catch (Exception err)
             {
