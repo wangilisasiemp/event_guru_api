@@ -9,6 +9,7 @@ namespace event_guru_api.Controllers
         public int? EventID { get; set; }
         public string? TransactionID { get; set; }
         public string? EventName { get; set; }
+        public String? Contributor { get; set; }
 
     }
 }

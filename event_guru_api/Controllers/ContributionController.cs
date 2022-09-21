@@ -49,7 +49,8 @@ namespace event_guru_api.Controllers
                         Amount = con.Amount,
                         EventName = con.Event.Title,
                         ID = con.ID,
-                        TransactionID = con.TransactionID
+                        TransactionID = con.TransactionID,
+                        Contributor = con.Attendee.FirstName + " " + con.Attendee.LastName
 
                     };
                     contributions.Add(cont);
