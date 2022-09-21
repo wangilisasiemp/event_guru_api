@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using event_guru_api.models;
+using event_guru_api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,13 @@ namespace event_guru_api.Controllers
         private readonly ApplicationContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration Config;
-        public ContributionController(ApplicationContext db, UserManager<ApplicationUser> userManager, IConfiguration config)
+        private readonly IMPesaService mPesaService;
+        public ContributionController(ApplicationContext db, UserManager<ApplicationUser> userManager, IMPesaService mpesaService, IConfiguration config)
         {
             _db = db;
             _userManager = userManager;
             Config = config;
+            mPesaService = mpesaService;
         }
 
         [HttpGet]
@@ -80,50 +83,28 @@ namespace event_guru_api.Controllers
 
         }
         [HttpPost]
-        [Route("pay")]
-        public async Task<IActionResult> Pay([FromBody] String name)
+        [Route("pay/{EventID:int}")]
+        public async Task<ActionResult<PaymentResponse>> Pay(int EventID, PaymentRequestModel model)
         {
             try
             {
-                //Api Key
-                var api_key = Config["MPESA_SANDBOX:API_KEY"];
-
-                //Public key on the API listener used to encrypt keys
-                var public_key = Config["MPESA_SANDBOX:PUBLIC_KEY"];
-                var address = Config["MPESA_SANDBOX:GET_SESSION_ADDRESS"];
-                var port = Config["MPESA_SANDBOX:GET_SESSION_PORT"];
-                var path = Config["MPESA_SANDBOX:GET_SESSION_PATH"];
-                APIContext context = new APIContext();
-                context.setPublicKey(public_key);
-                context.setApiKey(api_key);
-                context.setSsl(true);
-                context.setMethodType(APIMethodTypes.GET);
-                context.setAddress(address);
-                context.setPort(443);
-
-                context.setPath(path);
-
-                //context.addParameter("key", "value");
-                context.addHeader("Origin", "*");
-
-                APIRequest request = new APIRequest(context);
-                APIResponse response = null;
-                try
+                PaymentResponse response = await this.mPesaService.pay(model);
+                Contribution contribution = new Contribution()
                 {
-                    response = request.excecute();
-                }
-                catch (Exception e)
-                {
-                    return Problem($"Call failed {0}", e.Message);
-                }
-
-                //Display results
-
-
-                //Generate BearerToken
-                //String token = request.createBearerToken();
-
-                return Ok(response.getBody());
+                    EventID = EventID,
+                    AttendeeID = model.input_ThirdPartyConversationID,
+                    Amount = model.input_Amount,
+                    Completed = true,
+                    CustomerMSISDN = model.input_CustomerMSISDN,
+                    TransactionID = response.output_TransactionID,
+                    ConversationID = response.output_ConversationID,
+                    ThirdPartyConversationID = response.output_ThirdPartyConversationID,
+                    ResponseCode = response.output_ResponseCode,
+                    ResponseDesc = response.output_ResponseDesc
+                };
+                await _db.Contributions.AddAsync(contribution);
+                await _db.SaveChangesAsync();
+                return Ok(contribution);
 
             }
             catch (Exception e)

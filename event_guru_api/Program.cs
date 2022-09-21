@@ -56,12 +56,12 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 //2.Adding the identity by dependency injection
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 {
-    config.Password.RequireDigit = true;
+    config.Password.RequireDigit = false;
     config.Password.RequiredLength = 6;
     config.Password.RequiredUniqueChars = 0;
-    config.Password.RequireLowercase = true;
-    config.Password.RequireNonAlphanumeric = true;
-    config.Password.RequireUppercase = true;
+    config.Password.RequireLowercase = false;
+    config.Password.RequireNonAlphanumeric = false;
+    config.Password.RequireUppercase = false;
 })
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
@@ -100,6 +100,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IEventBudgetService, EventBudgetService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IMPesaService, MpesaService>();
 builder.Services.AddScoped<ISMSSenderService, SMSSenderService>();
 
 
