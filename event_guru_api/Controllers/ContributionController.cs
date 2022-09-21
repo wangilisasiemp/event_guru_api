@@ -88,24 +88,48 @@ namespace event_guru_api.Controllers
         {
             try
             {
-                PaymentResponse response = await this.mPesaService.pay(model);
-                Contribution contribution = new Contribution()
+                if (!ModelState.IsValid)
                 {
-                    EventID = EventID,
-                    AttendeeID = model.input_ThirdPartyConversationID,
-                    Amount = model.input_Amount,
-                    Completed = true,
-                    CustomerMSISDN = model.input_CustomerMSISDN,
-                    TransactionID = response.output_TransactionID,
-                    ConversationID = response.output_ConversationID,
-                    ThirdPartyConversationID = response.output_ThirdPartyConversationID,
-                    ResponseCode = response.output_ResponseCode,
-                    ResponseDesc = response.output_ResponseDesc
-                };
-                await _db.Contributions.AddAsync(contribution);
+                    return ValidationProblem();
+                }
+                var eventExists = await _db.Events.Where(e => e.ID == EventID).FirstOrDefaultAsync();
+                if (eventExists is null)
+                {
+                    ModelState.AddModelError("EventNotFound", "The event you are contributing two does not exist");
+                    return ValidationProblem();
+                }
+                var attendee = await _userManager.FindByIdAsync(model.input_ThirdPartyConversationID);
+                if (attendee is null)
+                {
+                    ModelState.AddModelError("AttendeeNotFound", "The attendee you supplied does not exist");
+                    return ValidationProblem();
+                }
+                PaymentResponse response = await this.mPesaService.pay(model);
+                var PrevContribution = await _db.Contributions.Where(c => c.EventID == EventID && c.AttendeeID == model.input_ThirdPartyConversationID).FirstOrDefaultAsync();
+                if (PrevContribution is null)
+                {
+                    Contribution newContribution = new Contribution()
+                    {
+                        EventID = EventID,
+                        AttendeeID = model.input_ThirdPartyConversationID,
+                        Amount = model.input_Amount,
+                        Completed = true,
+                        CustomerMSISDN = model.input_CustomerMSISDN,
+                        TransactionID = response.output_TransactionID,
+                        ConversationID = response.output_ConversationID,
+                        ThirdPartyConversationID = response.output_ThirdPartyConversationID,
+                        ResponseCode = response.output_ResponseCode,
+                        ResponseDesc = response.output_ResponseDesc
+                    };
+                    await _db.Contributions.AddAsync(newContribution);
+                    await _db.SaveChangesAsync();
+                    return Ok(new Response { Status = "Success", Message = "Contribution was added successfully" });
+                }
+                var totalContributed = PrevContribution.Amount + model.input_Amount;
+                PrevContribution.Amount = PrevContribution.Amount + model.input_Amount;
+                PrevContribution.Completed = totalContributed >= eventExists.MinContribution;
                 await _db.SaveChangesAsync();
-                return Ok(contribution);
-
+                return Ok(new Response { Status = "Success", Message = "The contribution was added successfully" });
             }
             catch (Exception e)
             {
